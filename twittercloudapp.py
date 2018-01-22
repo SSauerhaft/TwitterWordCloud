@@ -4,15 +4,14 @@
 ######################################################
 # In order to run:
 # -- must have python installed
-# -- pip install pyi_rth__tkinter
 # -- pip install python-twitter
 # -- pip install WordCloud
 # run in terminal using python twittercloudapp.py
 #######################################################
 
 
-import tkinter as tk
-from tkinter import *
+import Tkinter as tk
+from Tkinter import *
 import twitter
 from wordcloud import WordCloud, STOPWORDS
 from PIL import Image, ImageTk
@@ -39,17 +38,34 @@ class twittercloudapp(tk.Frame):
         self.setup_window(master)
         label = tk.Label(master, text="Enter a Twitter Handle", font = LARGE_FONT)
         v = tk.StringVar()
-        self.e = tk.Entry(self.f, textvariable=v)
+        self.e1 = tk.Entry(self.f, textvariable=v)
+
+        #input additional stopwords
+        label2 = tk.Label(self.f, text="Enter additional stopwords (separated by commas)", font = LARGE_FONT)
+        v2 = tk.StringVar()
+        self.e2 = tk.Entry(self.f, textvariable=v2)
+
+        #make a colorscheme choice from dropdown menu
+        self.colorvar = StringVar()
+        self.colorvar.set('rainbow')
+        popupMenu = OptionMenu(self.f, self.colorvar, "rainbow", "Blues", "Greens", "Reds", 'coolwarm')
+        label3 = tk.Label(self.f, text="Choose a Colorscheme") #.grid(row = 1, column = 1)
+
         buttonA = tk.Button(self.f, text="Make a Cloud", activeforeground = 'blue', bd = 4 , font = LARGE_FONT, command=self.makeacloudbutton)
-        self.e.pack()
-        buttonA.pack()
+
         label.pack()
+        self.e1.pack()
+        label2.pack()
+        self.e2.pack()
+        label3.pack()
+        popupMenu.pack()
+        buttonA.pack()
         self.f.pack()
 
     ## connect to the twitter api searching for given twitter handle and creates word corpus
     ## from twitter timeline
     def get_twitter_timeline(self):
-            user_name = self.e.get()
+            user_name = self.e1.get()
             api = twitter.Api(consumer_key='ELcMTiBTTyQpHiiKUe46chiHo',
                             consumer_secret='nWB7WxUuKJRTy8QpejoH9bAnqcKOLTXOlxpZmZ8JykMlBaLMGD',
                             access_token_key='632857901-QiNnyoNzbwiOoAEVwP7NGuKCEeKtqBJm34aVusFO',
@@ -72,16 +88,28 @@ class twittercloudapp(tk.Frame):
     def makeacloudbutton(self):
 
         text = self.get_twitter_timeline()
-        stopwords = set(STOPWORDS)
-        stopwords.add('https')
+        color_choice = self.colorvar.get()
 
-        wordcloud = WordCloud(width = 1000, height = 600, stopwords = stopwords).generate(text)
+        #set stopwords, including those given through user input
+        stopwords = set(STOPWORDS)
+        addl_stopwords = self.addl_stopwords()
+
+        if addl_stopwords is not None:
+            [stopwords.add(word) for word in addl_stopwords]
+
+        #build wordcloud
+        wordcloud = WordCloud(width = 1000, height = 600, colormap = color_choice, stopwords = stopwords).generate(text)
         image = wordcloud.to_image()
         img = ImageTk.PhotoImage(image)
 
         self.canvas.create_image (0,0, image = img, anchor = 'nw')
         self.canvas.image = img
         self.f.pack()
+
+    def addl_stopwords(self):
+        addl_stopwords = self.e2.get()
+        addl_words = addl_stopwords.split(',')
+        return addl_words
 
 
 def main():

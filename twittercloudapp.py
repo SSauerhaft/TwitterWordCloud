@@ -66,10 +66,10 @@ class twittercloudapp(tk.Frame):
     ## from twitter timeline
     def get_twitter_timeline(self):
             user_name = self.e1.get()
-            api = twitter.Api(consumer_key='ELcMTiBTTyQpHiiKUe46chiHo',
-                            consumer_secret='nWB7WxUuKJRTy8QpejoH9bAnqcKOLTXOlxpZmZ8JykMlBaLMGD',
-                            access_token_key='632857901-QiNnyoNzbwiOoAEVwP7NGuKCEeKtqBJm34aVusFO',
-                            access_token_secret='5oGI6JVozWFrtMDEscrOs0SFg5B5Du2Ll7VT4VnhjkmQX')
+            api = twitter.Api(consumer_key='',
+                            consumer_secret='',
+                            access_token_key='',
+                            access_token_secret='')
 
             t = api.GetUserTimeline(screen_name= user_name, count=200)
             tweets = [i.AsDict() for i in t]
